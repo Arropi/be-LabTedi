@@ -1,4 +1,4 @@
-const { getAllSubjects, addSubject } = require("../repository/subjectRepository")
+const { getAllSubjects, addSubject, getLastSubject } = require("../repository/subjectRepository")
 const { bigintToNumber } = require("../utils/functions")
 
 const getListSubjectService = async () => {
@@ -18,8 +18,18 @@ const getListSubjectService = async () => {
 
 const addSubjectService = async (subject_name) => {
     try {
-        const newSubject = await addSubject(subject_name)
-        const safeSubject = bigintToNumber(newSubject)
+        const dataSubject = subject_name.map((name) => ({ subject_name: name, created_at: new Date(), updated_at: new Date() }))
+        const newSubject = await addSubject(dataSubject)
+        const dataQuery = dataSubject.map((subj) => (
+            { 
+            AND: [
+                {subject_name: subj.subject_name},
+                
+            ]
+        }
+        ))
+        const getTheSubject = await getLastSubject(dataQuery)
+        const safeSubject = bigintToNumber(getTheSubject)
         return safeSubject
     } catch (error) {
         throw error

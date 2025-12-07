@@ -2,12 +2,12 @@ const {z, ZodError} = require('zod')
 
 const validateAddSubjects = async(req, res, next) =>{
     try {
-        const subject_name = z.string({
+        const subject_name = z.array(z.string({
             error: (iss) =>
                 iss.input === undefined
             ? "Field Subject Name Cannot Be Empty"
             : "Invalid input on Subject Name",
-        }).parse(req.body.subject_name)
+        }), 'Invalid input on Subject Name').parse(req.body.subject_name)
         next()
     } catch (error) {
         if (error instanceof ZodError) {
