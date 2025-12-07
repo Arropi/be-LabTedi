@@ -1,4 +1,4 @@
-const { getListSubjectService } = require("../service/subjectService")
+const { getListSubjectService, addSubjectService } = require("../service/subjectService")
 
 const getListSubject = async (req, res) => {
     try {
@@ -21,6 +21,29 @@ const getListSubject = async (req, res) => {
     }
 }
 
+const addSubject = async (req, res) => {
+    try {
+        const { subject_name } = req.body
+        const newSubject = await addSubjectService(subject_name)
+        return res.status(201).json({
+            'message': 'Subject added successfully',
+            'data': newSubject
+        })
+    } catch (error) {
+        console.log(error)
+        if (error.cause == 'Bad Request') {
+            res.status(400).json({
+                'message': error.message
+            })
+        } else {
+            res.status(500).json({
+                'message': error.message
+            })
+        }
+    }
+}
+
 module.exports = {
-    getListSubject
+    getListSubject,
+    addSubject
 }

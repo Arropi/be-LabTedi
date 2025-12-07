@@ -10,6 +10,23 @@ const getAllSubjects = async () => {
     }
 }
 
+const addSubject = async (subject_name) => {
+    try {
+        const newSubject = await prisma.subjects.create({
+            data: {
+                subject_name,
+                created_at: new Date(),
+                updated_at: new Date(),
+            }
+        })
+        return newSubject
+    } catch (error) {
+        console.log('Subject Repository Error: ', error)
+        throw Error('Internal Server Database Not Respond :(')
+    }
+}
+
 module.exports = {
-    getAllSubjects
+    getAllSubjects, 
+    addSubject
 }

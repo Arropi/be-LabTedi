@@ -1,4 +1,5 @@
-const { getRooms } = require("../repository/roomRepository")
+const { getRooms, createRoom } = require("../repository/roomRepository")
+const { bigintToNumber } = require("../utils/functions")
 
 const getListRoomsService = async () => {
     try {
@@ -15,6 +16,17 @@ const getListRoomsService = async () => {
     }
 }
 
+const addRoomService = async (room_name) => {
+    try {
+        const newRoom = await createRoom(room_name)
+        const safeRoom = bigintToNumber(newRoom)
+        return safeRoom
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
-    getListRoomsService
+    getListRoomsService,
+    addRoomService
 }

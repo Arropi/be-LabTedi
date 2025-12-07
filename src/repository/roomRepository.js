@@ -29,7 +29,9 @@ const createRoom = async (name) => {
         const room = await prisma.rooms.create({
             data: {
                 name: name,
-                type: 'laboratorium'
+                type: 'laboratorium',
+                created_at: new Date(),
+                updated_at: new Date()
             }
         })
         return room
