@@ -53,6 +53,9 @@ const updateUserDataService = async (email, nim, prodi) => {
 const updateAdminDataService = async(email, lab_id, user_id) => {
     try {
         const oldData = await getUserByEmail(email)
+        if (oldData.role === 'admin'){
+            throw new Error('Cannot change data has been admin', {cause: 'Bad Request'})
+        }
         const dataSensitive = await updateAdminByEmail(email, lab_id, user_id, oldData)
         return {
             'id': Number(dataSensitive.id),
