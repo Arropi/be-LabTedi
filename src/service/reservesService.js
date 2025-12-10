@@ -133,7 +133,7 @@ const createReservesService = async (dataInput, user_id) => {
                 'created_at': new Date()
             }
         })
-        console.log(dataReserves)
+        console.log("ini data yang di store: ", dataReserves)
         const reserves = await createReserves(dataReserves)
         return reserves
     } catch (error) {

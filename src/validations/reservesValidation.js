@@ -17,7 +17,22 @@ const reservesCreateValidation = async (req, res, next) => {
                 iss.input === undefined
             ? "Field Tanggal Cannot Be Empty"
             : "Invalid input on Tanggal"
-        }).refine((date) => new Date(date) > new Date().setHours(0,0,0,0), {
+        }).refine((date) => {
+            const reqDate = new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate()
+            );
+            const now = new Date();
+            const today = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate()
+            );
+            console.log({reqDate, today});
+
+            return reqDate >= today;
+        }, {
             error: "Tanggal tidak boleh kurang dari hari ini"
         })
         const inventories_id = z.number({
