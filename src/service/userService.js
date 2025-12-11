@@ -53,6 +53,9 @@ const updateUserDataService = async (email, nim, prodi) => {
 const updateAdminDataService = async(email, lab_id, user_id) => {
     try {
         const oldData = await getUserByEmail(email)
+        if(!oldData){
+            throw new Error('User not registered in this app', {cause: 'Bad Request'})
+        }
         if (oldData.role === 'admin'){
             throw new Error('Cannot change data has been admin', {cause: 'Bad Request'})
         }

@@ -20,6 +20,31 @@ const createUser = async (email, username, img_url) => {
     }
 }
 
+const createAndroidUser = async (username, nim, prodi, email, password) => {
+    try {
+        const user = await prisma.users.create({
+            data:{
+                username: username,
+                nim: nim, 
+                prodi: prodi,
+                email: email,
+                password: password
+            }, 
+            select: {
+                id: true,
+                username: true,
+                nim: true,
+                prodi: true,
+                email: true
+            }
+        })
+        return user
+    } catch (error) {
+        console.log('Create Android User Repository User', error)
+        throw Error ('Database Server Error Dalam Membuat User Android')
+    }
+}
+
 const getUserByEmail = async (email)=>{
     try {
         const user = await prisma.users.findFirst({
@@ -103,6 +128,7 @@ module.exports = {
     createUser,
     getUserByEmail,
     getUserEmail,
+    createAndroidUser,
     updateUserByEmail,
     updateAdminByEmail
 }

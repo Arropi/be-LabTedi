@@ -1,5 +1,5 @@
 const express = require('express')
-const authController = require('../controller/authController')
+const {authController} = require('../controller/authController')
 const { userValidation, updateValidation, toAdminValidation} = require('../validations/userValidation')
 const { getUserData, updateUserData } = require('../controller/userController')
 const { authMiddleware } = require('../middleware/authMiddleware')

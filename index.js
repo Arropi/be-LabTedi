@@ -1,5 +1,6 @@
 require("dotenv").config();
 const userRoute = require('./src/routes/userRoute')
+const androidAuthRoute = require('./src/routes/android/authRoute')
 const inventoriesRoute = require('./src/routes/inventoryRoute')
 const laboratoriesRoute = require('./src/routes/laboratoryRoute')
 const cartRoute = require('./src/routes/cartRoute')
@@ -37,6 +38,7 @@ app.use('/laboratories', laboratoriesRoute)
 app.use('/cart', cartRoute)
 app.use('/reserves', reservesRoute)
 app.use('/time-sessions', timeSessionRoute)
+app.use('/android/auth', androidAuthRoute)
 
 app.listen(port, () => {
   console.log(`Listening On Port ${port}`);
