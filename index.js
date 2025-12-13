@@ -18,7 +18,7 @@ const port = process.env.PORT;
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "https://train-e-commerce.vercel.app"],
     credentials: true,
   })
 );
