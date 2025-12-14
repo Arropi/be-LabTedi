@@ -45,7 +45,8 @@ const authLoginController = async (req, res) => {
             'message': login.message,
             'token': login.token,
             'role': login.role,
-            'lab': login.lab
+            'lab': login.lab,
+            'data': login.user
         })
     } catch (error) {
         if (error.cause == 'Bad Request'){
