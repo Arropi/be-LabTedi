@@ -176,6 +176,99 @@ const getReservesAdmin = async (lab_id) => {
     }
 }
 
+const getAndroidReserves = async(lab_id) => {
+    try {
+        const reserves = await prisma.reserves.findMany({
+            where: {
+                inventories: {
+                    labolatory_id: lab_id
+                },
+                status: {
+                    in: ["approve", "waiting_to_be_return"]
+                }
+            },
+            include: {
+                inventories: true
+            }
+        })
+        return reserves
+    } catch (error) {
+        console.log('Reserves Repository Error: ', error)
+        throw Error('Internal Server Database Not Respond :(')
+    }
+}
+
+const getAndroidUserReserves = async(user_id) => {
+    try {
+        const reserves = await prisma.reserves.findMany({
+            where: {
+                user_id: user_id,
+            }, 
+            include: {
+                inventories: true
+            }
+        })
+        return reserves
+    } catch (error) {
+        console.log('Reserves Repository Error: ', error)
+        throw Error('Internal Server Database Not Respond :(')
+    }
+}
+
+const getAndroidInventoriesReserves = async (inventory_id) => {
+    try {
+        const now = new Date();
+        const today = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate()
+        );
+        const reserves = await prisma.reserves.findMany({
+            where: {
+                inventories_id: inventory_id,
+                status: {
+                    in: ["approve", "waiting_to_be_return"]
+                },
+                tanggal: {
+                    gte: today
+                }
+            },
+            select: {
+                tanggal: true,
+                session_id: true
+            }
+        })
+        return reserves
+    } catch (error) {
+        console.log('Reserves Repository Error: ', error)
+        throw Error('Internal Server Database Not Respond :(')
+    }
+}
+
+const getAndroidHistoryReserves = async (user_id, lab_id) => {
+    try {
+        const reserves = await prisma.reserves.findMany({
+            where: {
+                user_id: user_id,
+                inventories: {
+                    labolatory_id: lab_id
+                }
+            },
+            include: {
+                inventories: {
+                    include: {
+                        inventory_galleries: true,
+                    }
+                }
+            }
+        })
+        return reserves
+    } catch (error) {
+        console.log('Reserves Repository Error: ', error)
+        throw Error('Internal Server Database Not Respond :(')
+    }
+}
+
 const getReservesInSpesificDate = async (tanggal) => {
     try {
         const reserves = await prisma.reserves.findMany({
@@ -266,8 +359,6 @@ const updateReserve = async (dataReserves, reserve_id) => {
     }
 }
 
-
-
 module.exports= {
     getReservesUser,
     getReserveOnGoingUser,
@@ -279,6 +370,10 @@ module.exports= {
     getReservesLaboratoryInSpesificDate,
     getReservesUserOnProcess,
     getReserveDetail,
+    getAndroidReserves,
+    getAndroidUserReserves,
     createReserves,
+    getAndroidInventoriesReserves,
+    getAndroidHistoryReserves,
     updateReserve,
 }

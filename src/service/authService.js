@@ -69,6 +69,13 @@ const authLoginSevice = async (email, password)=>{
                 'status': 200,
                 'message': `Login berhasil dengan email ${user.email}`,
                 'token': token,
+                'user': {
+                    'id': Number(user.id),
+                    'nama': user.username,
+                    'nim': user.nim,
+                    'prodi': user.prodi,
+                    'email': user.email,
+                },
                 'role': role,
                 'lab': user.labolatories ? user.labolatories.name : null
             }

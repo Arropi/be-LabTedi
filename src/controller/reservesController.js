@@ -1,4 +1,4 @@
-const { createReservesService, getReservesUserService, getReservesUserOngoingService, getReservesAdminOngoingService, updateReserveService, getReservesAdminService, getReservesInUseService, getReservesLaboratoryInUseService, getReservesAdminHistoryService, getReservesUserHistoryService } = require("../service/reservesService")
+const { createReservesService, getReservesUserService, getReservesUserOngoingService, getReservesAdminOngoingService, updateReserveService, getReservesAdminService, getReservesInUseService, getReservesLaboratoryInUseService, getReservesAdminHistoryService, getReservesUserHistoryService, getReserveAndroidInUseService, getHistoryReserveService } = require("../service/reservesService")
 
 const getReservesUser = async (req, res) => {
     try {
@@ -164,6 +164,49 @@ const getReservesLaboratoryInUse = async (req, res) => {
     }
 }
 
+const getReserveAndroidInUse = async (req, res) => {
+    try {
+        const inventory = await getReserveAndroidInUseService(req.params.inventory_id)
+        return res.status(200).json({
+            'message': 'Getting reserve data successfully',
+            'data': inventory
+        })
+    } catch (error) {
+        console.log('Error: ', error)
+        if (error.cause == 'Bad Request') {
+            res.status(400).json({
+                'message': error.message
+            })
+        } else {
+            res.status(500).json({
+                'message': error.message
+            })
+        }
+    }
+}
+
+const getHistoryReserve = async (req, res) => {
+    try {
+        const user = req.user
+        const reserves = await getHistoryReserveService(user.id)
+        return res.status(200).json({
+            'message': 'Getting reserve history data successfully',
+            'data': reserves
+        })
+    } catch (error) {
+        console.log('Error: ', error)
+        if (error.cause == 'Bad Request') {
+            res.status(400).json({
+                'message': error.message
+            })
+        } else {
+            res.status(500).json({
+                'message': error.message
+            })
+        }
+    }
+}
+
 const createReservesUser = async (req, res) => {
     try {
         const user = req.user
@@ -219,6 +262,8 @@ module.exports = {
     getReservesHistoryAdmin,
     getReservesInUse,
     getReservesLaboratoryInUse,
+    getReserveAndroidInUse,
+    getHistoryReserve,
     createReservesUser,
     updateReserveUser
 }

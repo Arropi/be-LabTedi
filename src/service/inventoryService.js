@@ -1,5 +1,6 @@
 const { getAllInventory, createInventory, createSubjectInventory, createImageInventory, getInventory,  updateInventory, getImageInventory, updateImageInventory, getSubjectInventory, deleteSubjectInventory, deleteInventory, getInventoriesLaboratory, getInventoriesLaboratoryAvailable } = require("../repository/inventoryRepository")
-const { getReservesInSpesificDate } = require("../repository/reservesRepository")
+const { getLaboratories } = require("../repository/laboratoryRepository")
+const { getReservesInSpesificDate, getAndroidReserves } = require("../repository/reservesRepository")
 const { getSubjectId, filterSubject, bigintToNumber } = require("../utils/functions")
 
 const getInventoriesService = async (lab_id) => {
@@ -21,6 +22,36 @@ const getInventoriesService = async (lab_id) => {
             }
         })
         return info
+    } catch (error) {
+        throw error
+    }
+}
+
+const getAndroidInventoriesService = async () => {
+    try {
+        const lab = await getLaboratories()
+        const idk = lab.find(lab => lab.name.toLowerCase().includes('idk'))
+        const inventoriesReserve = await getAndroidReserves(idk.id)
+        const inventories = await getInventoriesLaboratory(idk.id)
+        const formattedInventories = inventories.map((inventory) => {
+            const inventoryInReserve = inventoriesReserve.filter((reserve) => reserve.inventories.id === inventory.id)
+            let status
+            if(inventory.special_session){
+                if(inventoryInReserve.length < 8) status = "Available"
+                else status = "Not Available"
+            } else {
+                if (inventoryInReserve.length === 2) status = "Not Available"
+                else status = "Available"
+            }
+            return {
+                id: Number(inventory.id),
+                location: "Lab IDK",
+                name: inventory.item_name,
+                status: status,
+                imgRes: inventory.inventory_galleries.find(galleries => galleries.deleted_at===null)?.filepath ?? null,
+            }
+        })
+        return formattedInventories
     } catch (error) {
         throw error
     }
@@ -185,6 +216,7 @@ const deleteInventoryService = async (id, user_id) => {
 
 module.exports = {
     getInventoriesService,
+    getAndroidInventoriesService,
     getInventoriesLaboratoryService,
     getInventoriesLaboratoryAvailableService,
     createInventoryService,

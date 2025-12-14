@@ -1,4 +1,4 @@
-const { getInventoriesService, createInventoryService, addInventoriesSubjectService, addInventoriesImageService, updateInventoryService, updateInventoriesSubjectService, updateInventoriesImageService, deleteInventoryService, getInventoriesLaboratoryService, getInventoriesLaboratoryAvailableService } = require("../service/inventoryService")
+const { getInventoriesService, createInventoryService, addInventoriesSubjectService, addInventoriesImageService, updateInventoryService, updateInventoriesSubjectService, updateInventoriesImageService, deleteInventoryService, getInventoriesLaboratoryService, getInventoriesLaboratoryAvailableService, getAndroidInventoriesService } = require("../service/inventoryService")
 
 const getInventories = async (req, res) => {
     try {
@@ -7,6 +7,21 @@ const getInventories = async (req, res) => {
         return res.status(200).json({
             message: 'Getting data inventory succesfull',
             inventories
+        })
+    } catch (error) {
+        console.log('Error: ', error.message)
+        return res.status(500).json({
+            'message': 'Internal Server Error'
+        })
+    }
+}
+
+const getAndroidInventories = async (req, res) => {
+    try {
+        const inventories = await getAndroidInventoriesService()       
+        return res.status(200).json({
+            message: 'Getting data inventory succesfull',
+            data: inventories
         })
     } catch (error) {
         console.log('Error: ', error.message)
@@ -148,6 +163,7 @@ const deleteInventory = async (req, res) => {
 module.exports = {
     getInventories,
     getInventoryLaboratory,
+    getAndroidInventories,
     createInventory,
     updateInventory,
     deleteInventory

@@ -1,10 +1,67 @@
-const { getReservesUser, getReserveOnGoingUser, getReserveOnGoingAdmin, createReserves, updateReserve,  getReservesUserOnProcess, getReservesAdmin, getReservesInSpesificDate, getReservesLaboratoryInSpesificDate, getReserveHistoryAdmin, getReserveHistoryUser } = require("../repository/reservesRepository")
+const { getInventory } = require("../repository/inventoryRepository")
+const { getLaboratories } = require("../repository/laboratoryRepository")
+const { getReservesUser, getReserveOnGoingUser, getReserveOnGoingAdmin, createReserves, updateReserve,  getReservesUserOnProcess, getReservesAdmin, getReservesInSpesificDate, getReservesLaboratoryInSpesificDate, getReserveHistoryAdmin, getReserveHistoryUser, getAndroidInventoriesReserves, getAndroidHistoryReserves } = require("../repository/reservesRepository")
+const { getTimeSession, getSpecialSession, getNormalSession } = require("../repository/timeSessionRepository")
 const { bigintToNumber } = require("../utils/functions")
 
 const getReservesUserService = async (user_id) => {
     try {
         const reserves = await getReservesUser(user_id)
         const clearReserves = bigintToNumber(reserves)
+        return clearReserves
+    } catch (error) {
+        throw error
+    }
+}
+
+const getReserveAndroidInUseService = async (inventory_id) => {
+    try {
+        const inventory = await getInventory(inventory_id)
+        let session
+        if(inventory.special_session){
+            session = await getSpecialSession()
+        } else {
+            session = await getNormalSession()
+        }
+        const reserves = await getAndroidInventoriesReserves(inventory_id)
+        const clearReserves = bigintToNumber(reserves)
+        console.log(inventory, session, reserves)
+        const sessionClear = session.map(((sess)=> {
+            return {
+                session_id: Number(sess.id),
+                start_time: sess.start.toISOString().split('T')[1].substring(0,5),
+            }
+        }))
+        const subjectClear = inventory.inventory_subjects.map((subj) => {
+            return {
+                subject_id: Number(subj.subject_id),
+                subject_name: subj.subjects.subject_name
+            }
+        })
+        return {
+            subject: subjectClear,
+            session: sessionClear,
+            reserves: clearReserves
+        }
+    } catch (error) {
+        throw error
+    }
+}
+
+const getHistoryReserveService = async (user_id) => {
+    try {
+        const lab = await getLaboratories()
+        const idk = lab.find(lab => lab.name.toLowerCase().includes('idk'))
+        const reserves = await getAndroidHistoryReserves(user_id, idk.id)
+        const clearReserves = reserves.map((res)=> {
+            return {
+                id: Number(res.id),
+                location: "Lab IDK",
+                name: res.inventories.item_name,
+                status: res.status,
+                imgRes: res.inventories.inventory_galleries.find(galleries => galleries.deleted_at===null)?.filepath ?? null,
+            }
+        })
         return clearReserves
     } catch (error) {
         throw error
@@ -179,6 +236,8 @@ module.exports = {
     getReservesAdminHistoryService,
     getReservesInUseService,
     getReservesLaboratoryInUseService,
+    getReserveAndroidInUseService,
+    getHistoryReserveService,
     createReservesService,
     updateReserveService
 }

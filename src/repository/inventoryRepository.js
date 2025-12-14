@@ -91,8 +91,21 @@ const getInventory = async (id) => {
     try {
         const inventory = await prisma.inventories.findUnique({
             where: {
-                id: id
-            }
+                id: id,
+                inventory_subjects: {
+                    some: {
+                        deleted_at: null
+                    }
+                }
+            },
+            include: {
+                inventory_subjects: {
+                    include: {
+                        subjects: true
+                    }
+                }
+            },
+            
         })
         return inventory
     } catch (error) {
