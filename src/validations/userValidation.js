@@ -172,7 +172,10 @@ const updateValidation = (req, res, next) => {
       .parse(req.body.lab_id);
     const email = z
       .email("Invalid input on email")
-      .endsWith("@mail.ugm.ac.id", "Invalid email, please using ugm email")
+      .refine(
+        (val) => val.endsWith("@mail.ugm.ac.id") || val.endsWith("@ugm.ac.id"),
+        "Invalid email, please using ugm email"
+      )
       .optional()
       .parse(req.body.email);
     if (!nim && !prodi && !lab_id && !email) {
